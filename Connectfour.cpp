@@ -87,7 +87,7 @@ int getRow(char board[][7], int c)
     return -1;
 }
 
-int scores(char board[][7],int depth, int a, int b, bool comp )
+int getScore(char board[][7],int depth, int a, int b, bool comp )
 {
     if (b<=a)
     {
@@ -111,7 +111,7 @@ int scores(char board[][7],int depth, int a, int b, bool comp )
             if(comp)
             {
                 board[i][j] = 'O';
-                score = scores(board,depth+1,a,b, false);
+                score = getScore(board,depth+1,a,b, false);
                 bestScore = max(bestScore,score);
                 a = max(score,a);
                 board[i][j] = '-';
@@ -119,7 +119,7 @@ int scores(char board[][7],int depth, int a, int b, bool comp )
             else
             {
                 board[i][j] = 'X';
-                score = scores(board,depth+1,a,b, true);
+                score = getScore(board,depth+1,a,b, true);
                 bestScore = min(bestScore,score);
                 b = min (score,b);
                 board[i][j] = '-';
@@ -129,7 +129,7 @@ int scores(char board[][7],int depth, int a, int b, bool comp )
     return bestScore;
 }
 
-int checkScore(int places[7])
+int getHighestScore(int places[7])
 {
     int bestScore = -10000;
     int j;
@@ -151,7 +151,7 @@ int checkScore(int places[7])
     return j;
 }
 
-bool place(char board[][7], int col, char player)
+bool placeMove(char board[][7], int col, char player)
 {
     if(col < 0 || col >6)
         return false;
@@ -173,7 +173,7 @@ void compMove(char board[][7])
         if(i != -1)
         {
             board[i][j] = 'O';
-            score = scores(board,0,-1000,1000, false);
+            score = getScore(board,0,-1000,1000, false);
             board[i][j] = '-';
             places[j] = score;
         }
@@ -182,9 +182,10 @@ void compMove(char board[][7])
             places[j] = -1000;
         }
     }
-    int k = checkScore(places);
-    place(board, k, 'O');
+    int k = getHighestScore(places);
+    placeMove(board, k, 'O');
     printBoard(board);
+    return;
 }
 
 void playerMove(char board[][7], char player)
@@ -195,13 +196,14 @@ void playerMove(char board[][7], char player)
     cout << "Please choose column: ";
     cin >> c;
     c--;
-    while(!place(board,c,player))
+    while(!placeMove(board,c,player))
     {
         cout << "Invalid column! Please choose another column: " << endl;
         cin >> c;
         c--;
     }
     printBoard(board);
+    return;
 }
 
 void play(char board[][7], bool comp)
